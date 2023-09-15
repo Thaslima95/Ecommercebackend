@@ -141,7 +141,11 @@ app.patch("/updatecart",(req,res)=>{
             }
             else{
                 const diff=quantity-oldquantity;
-                const sql=`UPDATE cart set quantity=${quantity} ,cart_total=${data[0].product_price*quantity} where product_id=${productid} and user_id=${userid} `
+                const sql1=`SELECT product_id from products where inventory_quantity > 0`;
+                db.query(sql1,(err,data)=>{
+                    if(data.length>0)
+                    {
+                    const sql=`UPDATE cart set quantity=${quantity} ,cart_total=${data[0].product_price*quantity} where product_id=${productid} and user_id=${userid} `
                  db.query(sql,(err,data)=>{
                 if(err) throw err;
                 const sql=`UPDATE Products SET inventory_quantity=inventory_quantity- ${diff} where product_id=${productid}`
@@ -150,6 +154,9 @@ app.patch("/updatecart",(req,res)=>{
                     return res.json("cart updated")
                 })
             })
+                    }
+                })
+             
            
         }
     }})
